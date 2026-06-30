@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة مؤشر كتلة الجسم BMI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+        }
+        
+        #result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-bmi {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .result-message {
+            font-size: 20px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .underweight {
+            color: #f39c12;
+        }
+        .normal {
+            color: #27ae60;
+        }
+        .overweight {
+            color: #e67e22;
+        }
+        .obese {
+            color: #e74c3c;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee;
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .example {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .example span {
+            display: inline-block;
+            margin: 0 5px;
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 حاسبة BMI</h1>
+        
+        <form id="bmiForm">
+            <div class="form-group">
+                <label for="weight">⚖️ الوزن (كجم)</label>
+                <input 
+                    type="number" 
+                    id="weight" 
+                    placeholder="مثال: 70" 
+                    step="0.1" 
+                    min="20" 
+                    max="300"
+                    required
+                >
+                <small style="color: #888; display: block; margin-top: 5px;">(20 - 300 كجم)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="height">📏 الطول (متر)</label>
+                <input 
+                    type="number" 
+                    id="height" 
+                    placeholder="مثال: 1.75" 
+                    step="0.01" 
+                    min="0.5" 
+                    max="3"
+                    required
+                >
+                <small style="color: #888; display: block; margin-top: 5px;">(0.5 - 3 متر)</small>
+            </div>
+            
+            <button type="submit">احسب BMI</button>
+        </form>
+        
+        <div class="example">
+            💡 مثال: <span>70</span> كجم و <span>1.75</span> متر
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666;">جاري الحساب...</p>
+        </div>
+        
+        <div id="result">
+            <div class="result-bmi" id="bmiValue">0</div>
+            <div class="result-message" id="bmiMessage">-</div>
+        </div>
+        
+        <div class="error" id="error">
+            <strong>⚠️ خطأ:</strong> <span id="errorMessage"></span>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('bmiForm');
+        const result = document.getElementById('result');
+        const bmiValue = document.getElementById('bmiValue');
+        const bmiMessage = document.getElementById('bmiMessage');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // إخفاء النتائج السابقة
+            result.classList.remove('show');
+            error.classList.remove('show');
+            
+            // جلب القيم
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            
+            // التحقق من صحة القيم
+            if (isNaN(weight) || isNaN(height)) {
+                showError('الرجاء إدخال قيم صحيحة');
+                return;
+            }
+            
+            if (weight < 20 || weight > 300) {
+                showError('الوزن يجب أن يكون بين 20 و 300 كجم');
+                return;
+            }
+            if (height < 0.5 || height > 3) {
+                showError('الطول يجب أن يكون بين 0.5 و 3 متر');
+                return;
+            }
+            
+            // إظهار مؤشر التحميل
+            loading.classList.add('show');
+            
+            try {
+                // استدعاء الـ API
+                const response = await fetch(
+                    `http://localhost:8000/calculate_bmi?weight=${weight}&height=${height}`
+                );
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `خطأ في الخادم: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // عرض النتائج
+                bmiValue.textContent = data.bmi.toFixed(2);
+                bmiMessage.textContent = data.message;
+                
+                // تحديد لون النتيجة
+                bmiMessage.className = 'result-message';
+                if (data.message === 'Underweight') {
+                    bmiMessage.classList.add('underweight');
+                } else if (data.message === 'Normal weight') {
+                    bmiMessage.classList.add('normal');
+                } else if (data.message === 'Overweight') {
+                    bmiMessage.classList.add('overweight');
+                } else {
+                    bmiMessage.classList.add('obese');
+                }
+                
+                result.classList.add('show');
+                
+            } catch (err) {
+                showError('تعذر الاتصال بالخادم. تأكد من تشغيل الـ API: uvicorn hello:app --reload');
+                console.error('Error:', err);
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            error.classList.add('show');
+            result.classList.remove('show');
+        }
+    </script>
+</body>
+</html>
