@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏫 نظام إدارة المدرسة</title>
+    <style>
+        /* ===== CSS Reset & Variables ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --gray-900: #0f172a;
+            --shadow: 0 4px 24px rgba(79, 70, 229, 0.15);
+            --shadow-lg: 0 8px 40px rgba(79, 70, 229, 0.20);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tajawal', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        /* ===== Container ===== */
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: white;
+            padding: 24px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            font-size: 36px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            -webkit-text-fill-color: var(--gray-500);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--gray-50);
+            padding: 10px 22px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        /* ===== Status Messages ===== */
+        .message-container {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: slideDown 0.4s ease;
+        }
+
+        .message.show {
+            display: flex;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border-right: 4px solid var(--success);
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-right: 4px solid var(--danger);
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-right: 4px solid var(--primary);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== Toolbar ===== */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: var(--transition);
+            background: var(--gray-50);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        /* ===== Tabs ===== */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--gray-100);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            color: var(--gray-500);
+            flex: 1;
+        }
+
+        .tab-btn:hover {
+            color: var(--gray-700);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== Cards ===== */
+        .section-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .section-card.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header .badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ===== Table ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        thead {
+            background: var(--gray-50);
+        }
+
+        th {
+            padding: 14px 18px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        tr:hover td {
+            background: var(--gray-50);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* ===== Action Buttons in Table ===== */
+        .action-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .action-btns .btn {
+            padding: 4px 12px;
+            font-size: 13px;
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-lg);
+            animation: scaleIn 0.3s ease;
+            margin: 20px;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--gray-500);
+            transition: var(--transition);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: var(--transition);
+            background: var(--gray-50);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        .form-group input::placeholder {
+            color: var(--gray-300);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ===== Loading Spinner ===== */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+
+        .spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px 20px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .header-stats {
+                justify-content: space-around;
+            }
+
+            .stat-card {
+                padding: 8px 14px;
+            }
+
+            .stat-number {
+                font-size: 18px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                padding: 16px;
+            }
+
+            .search-box {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                padding: 10px;
+            }
+
+            .modal-box {
+                padding: 24px;
+                margin: 12px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .section-card {
+                padding: 16px;
+            }
+
+            .action-btns .btn {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .stat-card {
+                padding: 6px 12px;
+            }
+
+            .stat-icon {
+                font-size: 18px;
+            }
+
+            .stat-number {
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- ===== Header ===== -->
+        <header class="header">
+            <div class="header-left">
+                <span class="logo-icon">🏫</span>
+                <div>
+                    <h1>نظام إدارة المدرسة</h1>
+                    <span class="header-subtitle">School Management System v2.0</span>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <span class="stat-icon">👨‍🎓</span>
+                    <div class="stat-info">
+                        <span class="stat-number" id="studentCount">0</span>
+                        <span class="stat-label">الطلاب</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">👩‍🏫</span>
+                    <div class="stat-info">
+                        <span class="stat-number" id="teacherCount">0</span>
+                        <span class="stat-label">المعلمون</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📚</span>
+                    <div class="stat-info">
+                        <span class="stat-number" id="totalCount">0</span>
+                        <span class="stat-label">إجمالي</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== Messages ===== -->
+        <div class="message-container">
+            <div id="message" class="message"></div>
+        </div>
+
+        <!-- ===== Toolbar ===== -->
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="openModal('student')">
+                ➕ إضافة طالب
+            </button>
+            <button class="btn btn-success" onclick="openModal('teacher')">
+                ➕ إضافة معلم
+            </button>
+            <button class="btn btn-outline" onclick="refreshData()">
+                🔄 تحديث
+            </button>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 بحث باسم الطالب أو المعلم..." oninput="searchItems()">
+                <button class="btn btn-outline" onclick="searchItems()">بحث</button>
+            </div>
+        </div>
+
+        <!-- ===== Tabs ===== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="students" onclick="switchTab('students')">
+                👨‍🎓 الطلاب
+            </button>
+            <button class="tab-btn" data-tab="teachers" onclick="switchTab('teachers')">
+                👩‍🏫 المعلمون
+            </button>
+        </div>
+
+        <!-- ===== Students Section ===== -->
+        <div id="studentsSection" class="section-card active">
+            <div class="section-header">
+                <h2>👨‍🎓 قائمة الطلاب <span class="badge" id="studentBadge">0</span></h2>
+                <button class="btn btn-primary btn-sm" onclick="openModal('student')">➕ إضافة</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>العمر</th>
+                            <th>الصف</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentList">
+                        <!-- يتم التعبئة عبر JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Teachers Section ===== -->
+        <div id="teachersSection" class="section-card">
+            <div class="section-header">
+                <h2>👩‍🏫 قائمة المعلمين <span class="badge" id="teacherBadge">0</span></h2>
+                <button class="btn btn-success btn-sm" onclick="openModal('teacher')">➕ إضافة</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>المادة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherList">
+                        <!-- يتم التعبئة عبر JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Loading Spinner ===== -->
+        <div id="loadingSpinner" class="spinner"></div>
+
+    </div>
+
+    <!-- ===== Modal ===== -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 id="modalTitle">إضافة</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <form id="modalForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="formType" value="">
+                <input type="hidden" id="formId" value="">
+
+                <div class="form-group">
+                    <label for="formName">👤 الاسم</label>
+                    <input type="text" id="formName" placeholder="أدخل الاسم" required>
+                </div>
+
+                <div id="extraFields">
+                    <!-- يتم التعبئة ديناميكياً -->
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  CONFIGURATION
+        // ============================================================
+        const API_BASE = 'http://localhost:8000';
+
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let students = [];
+        let teachers = [];
+        let currentTab = 'students';
+
+        // ============================================================
+        //  DOM REFS
+        // ============================================================
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        const studentList = document.getElementById('studentList');
+        const teacherList = document.getElementById('teacherList');
+        const studentCount = document.getElementById('studentCount');
+        const teacherCount = document.getElementById('teacherCount');
+        const totalCount = document.getElementById('totalCount');
+        const studentBadge = document.getElementById('studentBadge');
+        const teacherBadge = document.getElementById('teacherBadge');
+        const messageEl = document.getElementById('message');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const formType = document.getElementById('formType');
+        const formId = document.getElementById('formId');
+        const formName = document.getElementById('formName');
+        const extraFields = document.getElementById('extraFields');
+        const submitBtn = document.getElementById('submitBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        // ============================================================
+        //  API HELPERS
+        // ============================================================
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options,
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.detail || `خطأ ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                showMessage(error.message || 'فشل الاتصال بالخادم', 'error');
+                throw error;
+            }
+        }
+
+        // ============================================================
+        //  CRUD OPERATIONS
+        // ============================================================
+        async function loadStudents() {
+            try {
+                students = await apiCall('/students');
+                renderStudents();
+            } catch (error) {
+                // استخدام بيانات تجريبية في حال فشل الاتصال
+                students = [
+                    { id: 1, name: 'أحمد محمد', age: 15, grade: '10' },
+                    { id: 2, name: 'سارة علي', age: 16, grade: '11' }
+                ];
+                renderStudents();
+                showMessage('تم تحميل بيانات تجريبية للطلاب', 'info');
+            }
+        }
+
+        async function loadTeachers() {
+            try {
+                teachers = await apiCall('/teachers');
+                renderTeachers();
+            } catch (error) {
+                teachers = [
+                    { id: 1, name: 'أستاذ خالد', subject: 'الرياضيات' },
+                    { id: 2, name: 'أستاذة نورة', subject: 'العلوم' }
+                ];
+                renderTeachers();
+                showMessage('تم تحميل بيانات تجريبية للمعلمين', 'info');
+            }
+        }
+
+        async function refreshData() {
+            showLoading(true);
+            try {
+                await Promise.all([loadStudents(), loadTeachers()]);
+                showMessage('✅ تم تحديث البيانات بنجاح', 'success');
+            } catch (error) {
+                showMessage('❌ فشل تحديث البيانات', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ----- Create -----
+        async function createStudent(data) {
+            const result = await apiCall('/students', {
+                method: 'POST',
+                body: JSON.stringify(data),
+            });
+            students.push(result);
+            renderStudents();
+            showMessage(`✅ تم إضافة الطالب "${data.name}" بنجاح`, 'success');
+        }
+
+        async function createTeacher(data) {
+            const result = await apiCall('/teachers', {
+                method: 'POST',
+                body: JSON.stringify(data),
+            });
+            teachers.push(result);
+            renderTeachers();
+            showMessage(`✅ تم إضافة المعلم "${data.name}" بنجاح`, 'success');
+        }
+
+        // ----- Update -----
+        async function updateStudent(id, data) {
+            const result = await apiCall(`/students/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(data),
+            });
+            const index = students.findIndex(s => s.id === id);
+            if (index !== -1) students[index] = result;
+            renderStudents();
+            showMessage(`✅ تم تحديث الطالب "${data.name}" بنجاح`, 'success');
+        }
+
+        async function updateTeacher(id, data) {
+            const result = await apiCall(`/teachers/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(data),
+            });
+            const index = teachers.findIndex(t => t.id === id);
+            if (index !== -1) teachers[index] = result;
+            renderTeachers();
+            showMessage(`✅ تم تحديث المعلم "${data.name}" بنجاح`, 'success');
+        }
+
+        // ----- Delete -----
+        async function deleteStudent(id) {
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا الطالب؟')) return;
+            await apiCall(`/students/${id}`, { method: 'DELETE' });
+            students = students.filter(s => s.id !== id);
+            renderStudents();
+            showMessage('🗑️ تم حذف الطالب', 'info');
+        }
+
+        async function deleteTeacher(id) {
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا المعلم؟')) return;
+            await apiCall(`/teachers/${id}`, { method: 'DELETE' });
+            teachers = teachers.filter(t => t.id !== id);
+            renderTeachers();
+            showMessage('🗑️ تم حذف المعلم', 'info');
+        }
+
+        // ============================================================
+        //  RENDER FUNCTIONS
+        // ============================================================
+        function renderStudents(list = students) {
+            const tbody = studentList;
+            if (list.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-icon">📭</div>
+                                <p>لا يوجد طلاب مسجلين</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = list.map((s, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${s.name}</strong></td>
+                        <td>${s.age}</td>
+                        <td>${s.grade}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-warning btn-sm" onclick="editStudent(${s.id})">✏️ تعديل</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteStudent(${s.id})">🗑️ حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            const count = students.length;
+            studentCount.textContent = count;
+            studentBadge.textContent = count;
+            updateTotalCount();
+        }
+
+        function renderTeachers(list = teachers) {
+            const tbody = teacherList;
+            if (list.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <div class="empty-icon">📭</div>
+                                <p>لا يوجد معلمين مسجلين</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = list.map((t, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${t.name}</strong></td>
+                        <td>${t.subject}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-warning btn-sm" onclick="editTeacher(${t.id})">✏️ تعديل</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteTeacher(${t.id})">🗑️ حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            const count = teachers.length;
+            teacherCount.textContent = count;
+            teacherBadge.textContent = count;
+            updateTotalCount();
+        }
+
+        function updateTotalCount() {
+            totalCount.textContent = students.length + teachers.length;
+        }
+
+        // ============================================================
+        //  SEARCH
+        // ============================================================
+        function searchItems() {
+            const query = searchInput.value.trim().toLowerCase();
+            if (!query) {
+                renderStudents();
+                renderTeachers();
+                return;
+            }
+
+            const filteredStudents = students.filter(s => s.name.toLowerCase().includes(query));
+            const filteredTeachers = teachers.filter(t => t.name.toLowerCase().includes(query));
+            renderStudents(filteredStudents);
+            renderTeachers(filteredTeachers);
+        }
+
+        // ============================================================
+        //  TABS
+        // ============================================================
+        function switchTab(tab) {
+            currentTab = tab;
+            $$('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+            document.getElementById('studentsSection').classList.toggle('active', tab === 'students');
+            document.getElementById('teachersSection').classList.toggle('active', tab === 'teachers');
+            // إعادة تعيين البحث
+            searchInput.value = '';
+            renderStudents();
+            renderTeachers();
+        }
+
+        // ============================================================
+        //  MODAL
+        // ============================================================
+        function openModal(type, item = null) {
+            formType.value = type;
+            formId.value = item?.id || '';
+
+            if (type === 'student') {
+                modalTitle.textContent = item ? '✏️ تعديل طالب' : '➕ إضافة طالب';
+                submitBtn.textContent = item ? 'تحديث' : 'إضافة';
+                extraFields.innerHTML = `
+                    <div class="form-group">
+                        <label>📅 العمر</label>
+                        <input type="number" id="formAge" placeholder="مثال: 15" min="5" max="25" value="${item?.age || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📚 الصف</label>
+                        <input type="text" id="formGrade" placeholder="مثال: 10" value="${item?.grade || ''}" required>
+                    </div>
+                `;
+            } else {
+                modalTitle.textContent = item ? '✏️ تعديل معلم' : '➕ إضافة معلم';
+                submitBtn.textContent = item ? 'تحديث' : 'إضافة';
+                extraFields.innerHTML = `
+                    <div class="form-group">
+                        <label>📖 المادة</label>
+                        <input type="text" id="formSubject" placeholder="مثال: الرياضيات" value="${item?.subject || ''}" required>
+                    </div>
+                `;
+            }
+
+            formName.value = item?.name || '';
+            modalOverlay.classList.add('show');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('show');
+            document.getElementById('modalForm').reset();
+        }
+
+        // ============================================================
+        //  FORM HANDLING
+        // ============================================================
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const type = formType.value;
+            const id = formId.value;
+            const name = formName.value.trim();
+
+            if (!name) {
+                showMessage('⚠️ الرجاء إدخال الاسم', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                if (type === 'student') {
+                    const age = parseInt(document.getElementById('formAge').value);
+                    const grade = document.getElementById('formGrade').value.trim();
+                    if (!age || !grade) {
+                        showMessage('⚠️ الرجاء إدخال العمر والصف', 'error');
+                        showLoading(false);
+                        return;
+                    }
+                    const data = { name, age, grade };
+                    if (id) {
+                        await updateStudent(parseInt(id), data);
+                    } else {
+                        await createStudent(data);
+                    }
+                } else {
+                    const subject = document.getElementById('formSubject').value.trim();
+                    if (!subject) {
+                        showMessage('⚠️ الرجاء إدخال المادة', 'error');
+                        showLoading(false);
+                        return;
+                    }
+                    const data = { name, subject };
+                    if (id) {
+                        await updateTeacher(parseInt(id), data);
+                    } else {
+                        await createTeacher(data);
+                    }
+                }
+                closeModal();
+            } catch (error) {
+                // الرسالة تظهر تلقائياً من apiCall
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ============================================================
+        //  EDIT HELPERS
+        // ============================================================
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (student) openModal('student', student);
+        }
+
+        function editTeacher(id) {
+            const teacher = teachers.find(t => t.id === id);
+            if (teacher) openModal('teacher', teacher);
+        }
+
+        // ============================================================
+        //  UI HELPERS
+        // ============================================================
+        function showMessage(text, type = 'info') {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type} show`;
+            clearTimeout(messageEl._timeout);
+            messageEl._timeout = setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 4000);
+        }
+
+        function showLoading(show) {
+            loadingSpinner.classList.toggle('show', show);
+        }
+
+        // ============================================================
+        //  CLOSE MODAL ON OVERLAY CLICK
+        // ============================================================
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ============================================================
+        //  KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'F5') { e.preventDefault();
+                refreshData(); }
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            showLoading(true);
+            try {
+                await Promise.all([loadStudents(), loadTeachers()]);
+                showMessage('🚀 النظام جاهز للاستخدام', 'success');
+            } catch (error) {
+                showMessage('⚠️ جاري استخدام البيانات التجريبية', 'info');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // ============================================================
+        //  EXPOSE FUNCTIONS TO GLOBAL SCOPE (for inline onclick)
+        // ============================================================
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.handleFormSubmit = handleFormSubmit;
+        window.refreshData = refreshData;
+        window.searchItems = searchItems;
+        window.switchTab = switchTab;
+        window.editStudent = editStudent;
+        window.editTeacher = editTeacher;
+        window.deleteStudent = deleteStudent;
+        window.deleteTeacher = deleteTeacher;
+        window.loadStudents = loadStudents;
+        window.loadTeachers = loadTeachers;
+    </script>
+
+</body>
+</html>
